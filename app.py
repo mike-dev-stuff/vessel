@@ -76,6 +76,11 @@ _IMAGE_SETTINGS = {
     "prompt_prefix": _PROFILE.get("image_prompt_prefix", ""),
     "prompt_suffix": _PROFILE.get("image_prompt_suffix", ""),
 }
+_IMAGE_FREQUENCY = _PROFILE.get(
+    "image_generation_frequency",
+    "only when a visual would genuinely add value",
+)
+_IMAGE_PROMPT_INSTRUCTIONS = _PROFILE.get("image_prompt_instructions", "")
 
 
 def build_response_system_prompt(thinking, memory_context="", search_context=""):
@@ -199,7 +204,9 @@ def chat():
     # Step 1: Inner monologue FIRST — emotion + planning + memory gating (1 Ollama call)
     emotion_history = emotion_tracker.get_history_string()
     thinking = inner_monologue.think(
-        conversation_history, PERSONA_CONTEXT, emotion_history
+        conversation_history, PERSONA_CONTEXT, emotion_history,
+        image_frequency=_IMAGE_FREQUENCY,
+        image_prompt_instructions=_IMAGE_PROMPT_INSTRUCTIONS,
     )
 
     # Update emotion tracker with results

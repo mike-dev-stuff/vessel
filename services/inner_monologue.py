@@ -36,8 +36,8 @@ Rules:
   * 2 messages: engaged, conversational, or making a point with a follow-up
   * 3 messages: excited, enthusiastic, surprised, or emotionally charged moments
 - Keep inner_thoughts authentic to the character's personality.
-- should_generate_image should only be true if a visual would genuinely add value.
-- If generating an image, set image_prompt to a detailed visual description.
+- should_generate_image: {image_frequency}
+- If generating an image, set image_prompt to a detailed visual description. {image_prompt_instructions}
 - Set needs_memory_lookup to true ONLY when the user references something from a \
 previous session, asks about a past conversation topic, or asks something you \
 cannot answer from the visible conversation history alone. If the answer is \
@@ -57,10 +57,16 @@ or when the conversation naturally calls for it — not as a default filler.
 """
 
 
-def think(conversation_history, persona_context, emotion_history=""):
+def think(conversation_history, persona_context, emotion_history="",
+          image_frequency="only when a visual would genuinely add value",
+          image_prompt_instructions=""):
     """Run the inner monologue. Returns a dict with thinking results."""
     # Build a focused prompt with just enough context
-    system = f"{MONOLOGUE_SYSTEM_PROMPT}\n\nCharacter context:\n{persona_context}"
+    prompt = MONOLOGUE_SYSTEM_PROMPT.format(
+        image_frequency=image_frequency,
+        image_prompt_instructions=image_prompt_instructions,
+    )
+    system = f"{prompt}\n\nCharacter context:\n{persona_context}"
     if emotion_history:
         system += f"\n\nRecent emotional trajectory:\n{emotion_history}"
 
